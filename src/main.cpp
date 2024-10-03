@@ -4,14 +4,12 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEScan.h>
-#include <BLEAdvertisedDevice.h>
-
 #include <i2cEncoderMiniLib.h>
 
 #include "gui/guiStuff.h"
+#include "toy/toyManager.h"
+#include "sensor/adcManager.h"
+#include "preferencesManager.h"
 
 #define I2C_0_SDA 16
 #define I2C_0_SCL 17
@@ -20,6 +18,9 @@
 
 Adafruit_SSD1306 display(128, 64, &Wire); // width, height
 i2cEncoderMiniLib rotEncoder(0x20);
+
+ToyManager toyManager;
+ADCManager adcManager;
 
 void draw();
 void PrintHEX(uint8_t i);
@@ -37,23 +38,13 @@ void on_encoder_ButtonLongPush(i2cEncoderMiniLib *obj);
 
 int32_t encoderPosition = 0;
 
-// bluetooth
-int scanTime = 5; // seconds
-BLEScan* pBLEScan;
-
-class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
-  void onResult(BLEAdvertisedDevice advertisedDevice) {
-    if (advertisedDevice.getAddress().equals(BLEAddress("c4:4f:50:91:71:7e"))){
-      Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
-
-    }
-  }
-};
 
 
 void setup()
 {
   // put your setup code here, to run once:
+  ToyManager::Instance = &toyManager;
+
 
   Serial.begin(115200);
   pinMode(IntPin, INPUT);
@@ -84,76 +75,29 @@ void setup()
       GuiStuff::initializeGuis(&display, &rotEncoder);
 
 
-      Serial.write("everything alright!\n");
-
-
-      BLEDevice::init("");
-      pBLEScan = BLEDevice::getScan(); // create new scan
-      pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
-      pBLEScan->setActiveScan(true); //active scan uses more power, but get results faster
-      pBLEScan->setInterval(100);
-      pBLEScan->setWindow(99); // less or equal setInterval value
+      adcManager.init();
+      toyManager.init();
+      PreferencesManager::instance.begin();
     }
   }
 }
-// lovense target: LVS-Z44226, Address: c4:4f:50:91:71:7e, serviceUUID: 5a300001-0023-4bd4-bbd5-a6920e4c5653
-
+uint16_t delayCtr = 0;
 void loop()
 {
+  delayCtr++;
   // put your main code here, to run repeatedly:
   
   rotEncoder.updateStatus();
   
-  BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
-
-  Serial.print("Devices found: ");
-  Serial.println(foundDevices.getCount());
-  Serial.println("Scan done!");
-
-  BLEClient bleclient{};
-  for (int i=0;i<foundDevices.getCount();i++){
-    auto device = foundDevices.getDevice(i);
-    if (device.getAddress().equals(BLEAddress("c4:4f:50:91:71:7e"))){
-      if (bleclient.connect(&device)){
-        Serial.println("connected");
-        auto services = bleclient.getServices();
-        auto serviceMap = *services;
-        for (const auto& kv : serviceMap){
-          kv.second->getCharacteristics();
-          Serial.println(kv.second->toString().c_str());
-        }
-        BLEUUID serviceUUID1("00001800-0000-1000-8000-00805f9b34fb");
-        BLEUUID charac1("00002a00-0000-1000-8000-00805f9b34fb"); // nothing here
-        BLEUUID charac2("00002a01-0000-1000-8000-00805f9b34fb"); // nothing here
-        BLEUUID charac3("00002a04-0000-1000-8000-00805f9b34fb"); // nothing here
-        BLEUUID charac4("00002aa6-0000-1000-8000-00805f9b34fb"); // nothing here
-        BLEUUID serviceUUID2("5a300001-0023-4bd4-bbd5-a6920e4c5653");
-        BLEUUID charac5("5a300002-0023-4bd4-bbd5-a6920e4c5653"); // here seems to be what i am looking for
-        BLEUUID charac6("5a300003-0023-4bd4-bbd5-a6920e4c5653"); // something with patterns here
-        bleclient.getService(serviceUUID1)->setValue(charac4, "Vibrate:10;");
-
-        Serial.println("char1");
-        Serial.println( (bleclient.getService(serviceUUID1)->getValue(charac1)).c_str());
-        Serial.println("char2");
-        Serial.println( (bleclient.getService(serviceUUID1)->getValue(charac2)).c_str());
-        Serial.println("char3");
-        Serial.println( (bleclient.getService(serviceUUID1)->getValue(charac3)).c_str());
-        Serial.println("char4");
-        Serial.println( (bleclient.getService(serviceUUID1)->getValue(charac4)).c_str());
-        Serial.println("char5");
-        Serial.println( (bleclient.getService(serviceUUID2)->getValue(charac5)).c_str());
-        Serial.println("char6");
-        Serial.println( (bleclient.getService(serviceUUID2)->getValue(charac6)).c_str());
-
-
-      } else {
-        Serial.println("could not connect to hush");
-      }
-    }
+  if ((GuiStuff::activeGui == &GuiStuff::guiPlay) && adcManager.updateValues()){
+    GuiStuff::guiPlay.setAdcValue(adcManager.getAdcValue());
   }
-  pBLEScan->clearResults();
+  if (delayCtr == 1000) { // check bluetooth once per 5 seconds
+    toyManager.checkConnections();
+    delayCtr = 0;
+  }
   
-  delay(5000);
+  delay(5);
 }
 
 void draw()

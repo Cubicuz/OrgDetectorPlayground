@@ -5,6 +5,6 @@ class ToyInterface {
 
 public:
 
-}
+};
 
 #endif

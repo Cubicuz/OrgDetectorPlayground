@@ -3,12 +3,13 @@
 
 #include "menu.h"
 #include "play.h"
-
+#include "bluetoothSettings.h"
 
 class GuiStuff{
 public:
   static  Menu guiMenu;
   static Play guiPlay;
+  static BluetoothSettings guiBluetoothSettings;
 
   static GuiInterface *activeGui;
   

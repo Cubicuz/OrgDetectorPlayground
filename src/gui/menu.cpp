@@ -49,8 +49,7 @@ void Menu::setup()
   encoder->writeMin((int32_t)0);                      /* Set the minimum threshold */
   encoder->writeMax((int32_t)menuEntries.size() - 1); /* Set the maximum threshold*/
   encoder->writeStep((int32_t)1);                     /* Set the step to 1*/
-  encoder->writeCounter(0);
-
+  encoder->writeCounter(selectedMenuEntryIndex);
   draw();
 }
 
