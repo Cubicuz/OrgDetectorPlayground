@@ -66,10 +66,12 @@ void ToyBLE::connect()
 void ToyBLE::setIntensity(int16_t intensity)
 {
   if (bleclient.isConnected()){
-
-    this->intensity = constrain(intensity, 0, 100);
-    String value = String("Vibrate:") + String(this->intensity);
-    bleclient.getService(serviceUUID2)->setValue(charac5, value.c_str());
+    int16_t newIntensity = constrain(intensity, 0, 100);
+    if (this->intensity != newIntensity){
+      this->intensity = newIntensity;
+      String value = String("Vibrate:") + String(this->intensity);
+      bleclient.getService(serviceUUID2)->setValue(charac5, value.c_str());
+    }
   }
 }
 

@@ -10,6 +10,7 @@
 #include "toy/toyManager.h"
 #include "sensor/adcManager.h"
 #include "preferencesManager.h"
+#include "sensor/detector.h"
 
 #define I2C_0_SDA 16
 #define I2C_0_SCL 17
@@ -81,23 +82,38 @@ void setup()
     }
   }
 }
-uint16_t delayCtr = 0;
+unsigned long nextBluetoothRefreshTimestamp = 0;
 void loop()
 {
-  delayCtr++;
+  unsigned long currentTimeStamp = millis();
   // put your main code here, to run repeatedly:
   
   rotEncoder.updateStatus();
   
-  if ((GuiStuff::activeGui == &GuiStuff::guiPlay) && adcManager.updateValues()){
+  if ((GuiStuff::activeGui == &GuiStuff::guiPlay)){
+    adcManager.updateValues();
+    Detector::instance.putValue(adcManager.getAdcValue());
+    switch (Detector::instance.getState())
+    {
+    case Detector::State::BORING:
+      toyManager.setIntensity(10);
+      break;
+    case Detector::State::FUN:
+      toyManager.setIntensity(1);
+      break;
+    case Detector::State::COOLDOWN:
+      toyManager.setIntensity(0);
+      break;
+    default:
+      break;
+    }
     GuiStuff::guiPlay.setAdcValue(adcManager.getAdcValue());
   }
-  if (delayCtr == 1000) { // check bluetooth once per 5 seconds
+  if (currentTimeStamp > nextBluetoothRefreshTimestamp) { // check bluetooth once per 5 seconds
     toyManager.checkConnections();
-    delayCtr = 0;
+    nextBluetoothRefreshTimestamp = currentTimeStamp + 5000; // bluetooth every 5 ms
   }
   
-  delay(5);
 }
 
 void draw()
@@ -149,7 +165,7 @@ void on_encoder_Change(i2cEncoderMiniLib *obj)
     GuiStuff::activeGui->handleUserInput();
     GuiStuff::activeGui->handleEncoderChange(encoderPosition);
   }
-  Serial.println("Encoder is moved!");
+  //Serial.println("Encoder is moved!");
   Serial.println(encoderPosition);
 }
 

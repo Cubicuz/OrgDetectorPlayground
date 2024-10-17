@@ -11,7 +11,7 @@ public:
   void setup() override;
 
   // adc input
-  void setAdcValue(uint16_t value);
+  void setAdcValue(int16_t value);
 
   // userinput
   void handleButtonPush() override;
@@ -19,9 +19,9 @@ public:
   void handleEncoderChange(int32_t position) override;
 
 private:
-  uint8_t maxIntensity = 0;
+  int8_t maxIntensity = 0;
   void setIntensity(uint8_t intensity);
-  uint16_t adcValue = 0;
+  int16_t adcValue = 0;
 };
 
 #endif
