@@ -3,10 +3,9 @@
 
 void Menu::draw()
 {
-  Serial.println("draw menu");
+  //Serial.println("draw menu");
   display->clearDisplay();
   display->setCursor(0, 0);
-  display->setTextSize(2);
   display->setTextColor(WHITE, BLACK);
 
   // there is space for 4 items on the screen. The second one is the selected one
@@ -50,12 +49,14 @@ void Menu::setup()
   encoder->writeMax((int32_t)menuEntries.size() - 1); /* Set the maximum threshold*/
   encoder->writeStep((int32_t)1);                     /* Set the step to 1*/
   encoder->writeCounter(selectedMenuEntryIndex);
+
+  display->setTextSize(2);
   draw();
 }
 
 void Menu::handleButtonPush()
 {
-  Serial.println("Menu item selected");
+  //Serial.println("Menu item selected");
   GuiStuff::setActiveGui(guiEntries.at(selectedMenuEntryIndex));
 }
 

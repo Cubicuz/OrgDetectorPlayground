@@ -96,18 +96,21 @@ void loop()
     switch (Detector::instance.getState())
     {
     case Detector::State::BORING:
-      toyManager.setIntensity(10);
+      toyManager.setIntensity(High);
       break;
     case Detector::State::FUN:
-      toyManager.setIntensity(1);
+      toyManager.setIntensity(Low);
       break;
     case Detector::State::COOLDOWN:
-      toyManager.setIntensity(0);
+      toyManager.setIntensity(Off);
       break;
     default:
       break;
     }
     GuiStuff::guiPlay.setAdcValue(adcManager.getAdcValue());
+  } else if (GuiStuff::activeGui == &GuiStuff::guiVibtest){
+    adcManager.updateValues();
+    GuiStuff::guiVibtest.setAdcValue(adcManager.getAdcValue());
   }
   if (currentTimeStamp > nextBluetoothRefreshTimestamp) { // check bluetooth once per 5 seconds
     toyManager.checkConnections();
@@ -166,7 +169,7 @@ void on_encoder_Change(i2cEncoderMiniLib *obj)
     GuiStuff::activeGui->handleEncoderChange(encoderPosition);
   }
   //Serial.println("Encoder is moved!");
-  Serial.println(encoderPosition);
+  //Serial.println(encoderPosition);
 }
 
 void on_encoder_Decrement(i2cEncoderMiniLib *obj)

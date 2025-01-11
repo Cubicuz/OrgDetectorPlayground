@@ -3,13 +3,15 @@
 
 #include "menu.h"
 #include "play.h"
-#include "bluetoothSettings.h"
+#include "settings.h"
+#include "vibtest.h"
 
 class GuiStuff{
 public:
   static  Menu guiMenu;
   static Play guiPlay;
-  static BluetoothSettings guiBluetoothSettings;
+  static Settings guiSettings;
+  static Vibtest guiVibtest;
 
   static GuiInterface *activeGui;
   

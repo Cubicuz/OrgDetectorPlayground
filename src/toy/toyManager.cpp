@@ -7,6 +7,7 @@ ToyManager* ToyManager::Instance;
 void ToyManager::init()
 {
   toyBLE.init();
+  toyPWM.init();
 }
 
 void ToyManager::checkConnections()
@@ -21,4 +22,11 @@ void ToyManager::checkConnections()
 void ToyManager::setIntensity(int16_t intensity)
 {
   toyBLE.setIntensity(intensity);
+  toyPWM.setIntensity(intensity);
+}
+
+void ToyManager::setIntensity(Intensity intensity)
+{
+  toyBLE.setIntensity(intensity);
+  toyPWM.setIntensity(intensity);
 }

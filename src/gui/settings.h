@@ -1,10 +1,11 @@
-#ifndef BLUETOOTHSETTINGS_H__
-#define BLUETOOTHSETTINGS_H__
+#ifndef SETTINGS_H__
+#define SETTINGS_H__
+
 
 #include "guiInterface.h"
 
 
-class BluetoothSettings : public GuiInterface {
+class Settings : public GuiInterface {
 public:
   void draw() override;
   void init(Adafruit_SSD1306* dp, i2cEncoderMiniLib* enc) override;
@@ -19,6 +20,16 @@ private:
   // selected menu entry
   int8_t selectedIndex{};
 
+  enum EncoderPurpose {
+    menu,
+    BtVibIntensity,
+    BtDeviceSelect,
+    PwmLowIntensity,
+    PwmHighIntensity
+  };
+  void setEncoderPurpose(EncoderPurpose e);
+  EncoderPurpose encoderMode = menu;
+  int32_t tempEncoderVal = 0;
 
   void drawIndex(uint8_t index);
 };

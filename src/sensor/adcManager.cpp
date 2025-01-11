@@ -5,7 +5,7 @@ void ADCManager::init()
   adsSuccessfullStarted = ads.begin();
   if (adsSuccessfullStarted){
     //Serial.write("ads initialized!\n");
-    ads.setGain(GAIN_FOUR);
+    ads.setGain(GAIN_EIGHT);
   } else {
     Serial.write("error at ads begin\n");
   }

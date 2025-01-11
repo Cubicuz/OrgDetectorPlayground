@@ -6,15 +6,21 @@
 #include <BLEAdvertisedDevice.h>
 
 #include "toyBle.h"
+#include "preferencesManager.h"
 
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
   void onResult(BLEAdvertisedDevice advertisedDevice) {
     if (advertisedDevice.getAddress().equals(BLEAddress("c4:4f:50:91:71:7e"))){
-      Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+      //Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
 
     }
   }
 };
+
+const std::vector<ToyBLE::SelectableDevice> ToyBLE::selectableDevices{
+    {"Hush Michael", BLEAddress("c4:4f:50:91:71:7e"), BLEUUID("5a300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("5a300002-0023-4bd4-bbd5-a6920e4c5653")},
+    {"Max nd", BLEAddress("dc:98:65:69:16:c4"), BLEUUID("42300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("42300002-0023-4bd4-bbd5-a6920e4c5653")},
+  };
 
 void ToyBLE::init()
 {
@@ -37,14 +43,15 @@ void ToyBLE::connect()
 
   BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
 
-  Serial.print("Devices found: ");
-  Serial.println(foundDevices.getCount());
-  Serial.println("Scan done!");
+  //Serial.print("Devices found: ");
+  //Serial.println(foundDevices.getCount());
+  //Serial.println("Scan done!");
 
   
   for (int i=0;i<foundDevices.getCount();i++){
     auto device = foundDevices.getDevice(i);
-    if (device.getAddress().equals(myDeviceAddress)){
+    //Serial.println(device.toString().c_str());
+    if (device.getAddress().equals(selectableDevices[PreferencesManager::instance.selectedBluetoothDeviceIndex()].address)){
       if (bleclient.connect(&device)){
         Serial.println("connected");
         auto services = bleclient.getServices();
@@ -54,7 +61,7 @@ void ToyBLE::connect()
           Serial.println(kv.second->toString().c_str());
         }
       } else {
-        Serial.println("could not connect to hush");
+        //Serial.println("could not connect to hush");
       }
       break;
     }
@@ -70,11 +77,26 @@ void ToyBLE::setIntensity(int16_t intensity)
     if (this->intensity != newIntensity){
       this->intensity = newIntensity;
       String value = String("Vibrate:") + String(this->intensity);
-      bleclient.getService(serviceUUID2)->setValue(charac5, value.c_str());
+      uint16_t selectedIndex = PreferencesManager::instance.selectedBluetoothDeviceIndex();
+      bleclient.getService(selectableDevices[selectedIndex].serviceUUID)->setValue(selectableDevices[selectedIndex].characteristic, value.c_str());
     }
   }
 }
-
+void ToyBLE::setIntensity(Intensity intensity)
+{
+  switch (intensity)
+  {
+  case Off:
+    setIntensity(0);
+    break;
+  case Low:
+    setIntensity(5);
+  case High:
+    setIntensity(25);
+  default:
+    break;
+  }
+}
 void ToyBLE::end()
 {
   if (bleclient.isConnected()){

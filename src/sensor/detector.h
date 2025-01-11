@@ -28,8 +28,8 @@ private:
   int32_t sumOfCurrentValues{};
   int16_t lowestValue{};
   int16_t noiseIntensity{};
-  int16_t boringToFunThresh = 820;
-  int16_t funToBoringThresh = 800;
+  int16_t boringToFunThresh = 1850;
+  int16_t funToBoringThresh = 1830;
 
   int16_t shortAverage{};
   const int16_t shortAverageDuration = 5;
@@ -42,7 +42,7 @@ private:
   int16_t lastInserted(int16_t offset = 0);
 
   uint32_t integrationCounter;
-  const uint32_t integrationMax = 20000;
+  const uint32_t integrationMax = 50000;
 
   unsigned long cooldownBeginTimestamp;
   unsigned long cooldownTimeInMillis = 5000;

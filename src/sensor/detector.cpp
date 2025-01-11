@@ -26,8 +26,10 @@ void Detector::putValue(int16_t input){
 void Detector::setBoringToFunThresh(int16_t value)
 {
   value = constrain(value, 21, 0xFFF);
-  boringToFunThresh = value;
-  funToBoringThresh = value - 20;
+  if (value != boringToFunThresh){
+    boringToFunThresh = value;
+    funToBoringThresh = value - 40;
+  }
 }
 
 int16_t Detector::getBoringToFunThresh()
@@ -37,8 +39,6 @@ int16_t Detector::getBoringToFunThresh()
 
 int16_t Detector::lastInserted(int16_t offset)
 {
-  Serial.println("access");
-  Serial.println((lastInsertedIndex + longAverageDuration + offset)%longAverageDuration);
   return values[(lastInsertedIndex + longAverageDuration + offset)%longAverageDuration];
 }
 
@@ -73,5 +73,4 @@ void Detector::updateState()
   default:
     break;
   }
-  Serial.println(millis()/1000);
 }

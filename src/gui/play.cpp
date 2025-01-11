@@ -46,6 +46,12 @@ void Play::setup()
   encoder->writeStep(1);
   encoder->writeCounter(maxIntensity);
   encoder->writeCounter(Detector::instance.getBoringToFunThresh());
+
+  display->clearDisplay();
+  display->setCursor(0, 0);
+  display->setTextSize(2);
+  display->setTextColor(WHITE, BLACK);
+
   draw();
 }
 
@@ -57,7 +63,7 @@ void Play::setAdcValue(int16_t value)
 
 void Play::handleButtonPush()
 {
-
+  Serial.print("<BUTTON>");
 }
 
 void Play::handleButtonLongPush()
