@@ -14,6 +14,9 @@ void Play::draw() {
   display->print("tresh:");
   display->println(Detector::instance.getBoringToFunThresh());
 
+  display->print("cd:");
+  display->println(Detector::instance.getCooldownTimeSeconds()); 
+
   switch (Detector::instance.getState())
   {
   case Detector::State::BORING:
@@ -32,20 +35,26 @@ void Play::draw() {
   display->display();
 }
 
-void Play::init(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *enc)
+void Play::init(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *encLeft, i2cEncoderMiniLib *encRight)
 {
   display = dp;
-  encoder = enc;
+  encoderLeft = encLeft;
+  encoderRight = encRight;
 }
 
 void Play::setup()
 {
-  encoder->begin(i2cEncoderMiniLib::WRAP_DISABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
-  encoder->writeMin(500);
-  encoder->writeMax(0xFFF);
-  encoder->writeStep(1);
-  encoder->writeCounter(maxIntensity);
-  encoder->writeCounter(Detector::instance.getBoringToFunThresh());
+  encoderLeft->begin(i2cEncoderMiniLib::WRAP_DISABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
+  encoderLeft->writeMin(500);
+  encoderLeft->writeMax(0xFFF);
+  encoderLeft->writeStep(1);
+  encoderLeft->writeCounter(Detector::instance.getBoringToFunThresh());
+
+  encoderRight->begin(i2cEncoderMiniLib::WRAP_DISABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
+  encoderRight->writeMin(1);
+  encoderRight->writeMax(50);
+  encoderRight->writeStep(1);
+  encoderRight->writeCounter(Detector::instance.getCooldownTimeSeconds());
 
   display->clearDisplay();
   display->setCursor(0, 0);
@@ -61,23 +70,27 @@ void Play::setAdcValue(int16_t value)
   draw();
 }
 
-void Play::handleButtonPush()
+void Play::handleButtonPush(i2cEncoderMiniLib *obj)
 {
-  Serial.print("<BUTTON>");
+  if (obj == encoderLeft){
+    Serial.print("<BUTTON>");
+  }
 }
 
-void Play::handleButtonLongPush()
+void Play::handleButtonLongPush(i2cEncoderMiniLib *obj)
 {
-  GuiStuff::setActiveGui(&GuiStuff::guiMenu);
-  ToyManager::Instance->setIntensity(0);
+  if (obj == encoderLeft){
+    GuiStuff::setActiveGui(&GuiStuff::guiMenu);
+    ToyManager::Instance->setIntensity(Off);
+  }
 }
 
-void Play::handleEncoderChange(int32_t position)
+void Play::handleEncoderChange(i2cEncoderMiniLib *obj, int32_t position)
 {
-  Detector::instance.setBoringToFunThresh(position);
+  if (obj == encoderLeft){
+    Detector::instance.setBoringToFunThresh(position);
+  } else if (obj == encoderRight){
+    Detector::instance.setCooldownTimeSeconds(position);
+  }
 }
 
-void Play::setIntensity(uint8_t intensity)
-{
-  ToyManager::Instance->setIntensity(intensity);
-}

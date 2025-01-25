@@ -19,6 +19,8 @@ public:
 
   void setBoringToFunThresh(int16_t value);
   int16_t getBoringToFunThresh();
+  void setCooldownTimeSeconds(uint8_t value);
+  uint8_t getCooldownTimeSeconds();
 
   static Detector instance;
 private:
@@ -42,7 +44,7 @@ private:
   int16_t lastInserted(int16_t offset = 0);
 
   uint32_t integrationCounter;
-  const uint32_t integrationMax = 50000;
+  const uint32_t integrationMax = 100000;
 
   unsigned long cooldownBeginTimestamp;
   unsigned long cooldownTimeInMillis = 5000;

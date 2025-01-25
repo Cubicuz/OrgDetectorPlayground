@@ -19,10 +19,10 @@ void ToyManager::checkConnections()
   }
 }
 
-void ToyManager::setIntensity(int16_t intensity)
+void ToyManager::setIntensityInt(int16_t intensity)
 {
-  toyBLE.setIntensity(intensity);
-  toyPWM.setIntensity(intensity);
+  toyBLE.setIntensityInt(intensity);
+  toyPWM.setIntensityInt(intensity);
 }
 
 void ToyManager::setIntensity(Intensity intensity)

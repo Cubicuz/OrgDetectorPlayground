@@ -8,12 +8,12 @@
 class Settings : public GuiInterface {
 public:
   void draw() override;
-  void init(Adafruit_SSD1306* dp, i2cEncoderMiniLib* enc) override;
+  void init(Adafruit_SSD1306* dp, i2cEncoderMiniLib* encLeft, i2cEncoderMiniLib *encRight) override;
   virtual void setup() override;
   // userinput
-  void handleButtonPush() override;
-  void handleButtonLongPush() override;
-  void handleEncoderChange(int32_t position) override;
+  void handleButtonPush(i2cEncoderMiniLib *obj) override;
+  void handleButtonLongPush(i2cEncoderMiniLib *obj) override;
+  void handleEncoderChange(i2cEncoderMiniLib *obj, int32_t position) override;
 
   
 private:

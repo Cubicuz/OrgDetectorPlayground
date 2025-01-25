@@ -35,35 +35,40 @@ void Menu::draw()
   display->display();
 }
 
-void Menu::init(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *enc)
+void Menu::init(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *encLeft, i2cEncoderMiniLib *encRight)
 {
   display = dp;
-  encoder = enc;
+  encoderLeft = encLeft;
+  encoderRight = encRight;
   setup();
 }
 
 void Menu::setup()
 {
-  encoder->begin(i2cEncoderMiniLib::WRAP_ENABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
-  encoder->writeMin((int32_t)0);                      /* Set the minimum threshold */
-  encoder->writeMax((int32_t)menuEntries.size() - 1); /* Set the maximum threshold*/
-  encoder->writeStep((int32_t)1);                     /* Set the step to 1*/
-  encoder->writeCounter(selectedMenuEntryIndex);
+  encoderLeft->begin(i2cEncoderMiniLib::WRAP_ENABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
+  encoderLeft->writeMin((int32_t)0);                      /* Set the minimum threshold */
+  encoderLeft->writeMax((int32_t)menuEntries.size() - 1); /* Set the maximum threshold*/
+  encoderLeft->writeStep((int32_t)1);                     /* Set the step to 1*/
+  encoderLeft->writeCounter(selectedMenuEntryIndex);
 
   display->setTextSize(2);
   draw();
 }
 
-void Menu::handleButtonPush()
+void Menu::handleButtonPush(i2cEncoderMiniLib *obj)
 {
-  //Serial.println("Menu item selected");
-  GuiStuff::setActiveGui(guiEntries.at(selectedMenuEntryIndex));
+  if (obj == encoderLeft){
+    //Serial.println("Menu item selected");
+    GuiStuff::setActiveGui(guiEntries.at(selectedMenuEntryIndex));
+  }
 }
 
-void Menu::handleEncoderChange(int32_t position)
+void Menu::handleEncoderChange(i2cEncoderMiniLib *obj, int32_t position)
 {
-  selectedMenuEntryIndex = position;
-  draw();
+  if (obj == encoderLeft){
+    selectedMenuEntryIndex = position;
+    draw();
+  }
 }
 
 void Menu::addMenuEntry(String name, GuiInterface *gui)

@@ -16,7 +16,7 @@ public:
   static GuiInterface *activeGui;
   
   static void setActiveGui(GuiInterface *gui);
-  static void initializeGuis(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *enc);
+  static void initializeGuis(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *encLeft, i2cEncoderMiniLib *encRight);
 };
 
 #endif

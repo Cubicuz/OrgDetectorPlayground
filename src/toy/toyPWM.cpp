@@ -6,8 +6,8 @@ const int PWM_FREQ = 500;     // Recall that Arduino Uno is ~490 Hz. Official ES
 const int PWM_RESOLUTION = 8; // We'll use same resolution as Uno (8 bits, 0-255) but ESP32 can go up to 16 bits 
 
 // The max duty cycle value based on PWM resolution (will be 255 if resolution is 8 bits)
-const int MAX_DUTY_CYCLE = (int)(pow(2, PWM_RESOLUTION) - 1); 
-const int LOW_DUTY_CYCLE = (int)(MAX_DUTY_CYCLE / 3);
+const int MAX_DUTY_CYCLE = 200;
+const int LOW_DUTY_CYCLE = 50;
 
 const int LED_OUTPUT_PIN = 33;
 
@@ -21,7 +21,7 @@ void ToyPWM::init()
   ledcAttachPin(LED_OUTPUT_PIN, PWM_CHANNEL);
 }
 
-void ToyPWM::setIntensity(int16_t intensity)
+void ToyPWM::setIntensityInt(int16_t intensity)
 {
   if (!PreferencesManager::instance.pwmToyEnabled()){
     ledcWrite(PWM_CHANNEL, 0);
@@ -40,13 +40,13 @@ void ToyPWM::setIntensity(Intensity intensity)
   switch (intensity)
   {
   case Off:
-    setIntensity(0);
+    setIntensityInt(0);
     break;
   case Low:
-    setIntensity(LOW_DUTY_CYCLE);
+    setIntensityInt(LOW_DUTY_CYCLE);
     break;
   case High:
-    setIntensity(MAX_DUTY_CYCLE);
+    setIntensityInt(MAX_DUTY_CYCLE);
     break;
   default:
     break;

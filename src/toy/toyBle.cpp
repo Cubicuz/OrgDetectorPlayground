@@ -11,7 +11,7 @@
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
   void onResult(BLEAdvertisedDevice advertisedDevice) {
     if (advertisedDevice.getAddress().equals(BLEAddress("c4:4f:50:91:71:7e"))){
-      //Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+      Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
 
     }
   }
@@ -20,6 +20,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 const std::vector<ToyBLE::SelectableDevice> ToyBLE::selectableDevices{
     {"Hush Michael", BLEAddress("c4:4f:50:91:71:7e"), BLEUUID("5a300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("5a300002-0023-4bd4-bbd5-a6920e4c5653")},
     {"Max nd", BLEAddress("dc:98:65:69:16:c4"), BLEUUID("42300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("42300002-0023-4bd4-bbd5-a6920e4c5653")},
+    {"Domi2 nd", BLEAddress("f8:44:77:1d:27:e3"), BLEUUID("57300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("57300002-0023-4bd4-bbd5-a6920e4c5653")},
   };
 
 void ToyBLE::init()
@@ -43,14 +44,14 @@ void ToyBLE::connect()
 
   BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
 
-  //Serial.print("Devices found: ");
-  //Serial.println(foundDevices.getCount());
-  //Serial.println("Scan done!");
+  Serial.print("Devices found: ");
+  Serial.println(foundDevices.getCount());
+  Serial.println("Scan done!");
 
   
   for (int i=0;i<foundDevices.getCount();i++){
     auto device = foundDevices.getDevice(i);
-    //Serial.println(device.toString().c_str());
+    Serial.println(device.toString().c_str());
     if (device.getAddress().equals(selectableDevices[PreferencesManager::instance.selectedBluetoothDeviceIndex()].address)){
       if (bleclient.connect(&device)){
         Serial.println("connected");
@@ -70,7 +71,7 @@ void ToyBLE::connect()
 
 }
 
-void ToyBLE::setIntensity(int16_t intensity)
+void ToyBLE::setIntensityInt(int16_t intensity)
 {
   if (bleclient.isConnected()){
     int16_t newIntensity = constrain(intensity, 0, 100);
@@ -87,12 +88,12 @@ void ToyBLE::setIntensity(Intensity intensity)
   switch (intensity)
   {
   case Off:
-    setIntensity(0);
+    setIntensityInt(0);
     break;
   case Low:
-    setIntensity(5);
+    setIntensityInt(5);
   case High:
-    setIntensity(25);
+    setIntensityInt(25);
   default:
     break;
   }

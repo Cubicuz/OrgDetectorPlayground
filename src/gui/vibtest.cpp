@@ -16,19 +16,20 @@ void Vibtest::draw() {
   display->display();
 }
 
-void Vibtest::init(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *enc)
+void Vibtest::init(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *encLeft, i2cEncoderMiniLib *encRight)
 {
   display = dp;
-  encoder = enc;
+  encoderLeft = encLeft;
+  encoderRight = encRight;
 }
 
 void Vibtest::setup()
 {
-  encoder->begin(i2cEncoderMiniLib::WRAP_DISABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
-  encoder->writeMin(0);
-  encoder->writeMax(maxIntensity);
-  encoder->writeStep(1);
-  encoder->writeCounter(intensity);
+  encoderLeft->begin(i2cEncoderMiniLib::WRAP_DISABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
+  encoderLeft->writeMin(0);
+  encoderLeft->writeMax(maxIntensity);
+  encoderLeft->writeStep(1);
+  encoderLeft->writeCounter(intensity);
 
   display->clearDisplay();
   display->setCursor(0, 0);
@@ -44,25 +45,31 @@ void Vibtest::setAdcValue(int16_t value)
   draw();
 }
 
-void Vibtest::handleButtonPush()
+void Vibtest::handleButtonPush(i2cEncoderMiniLib *obj)
 {
-  setIntensity(0);
+  if (obj == encoderLeft){
+    setIntensity(0);
+  }
 }
 
-void Vibtest::handleButtonLongPush()
+void Vibtest::handleButtonLongPush(i2cEncoderMiniLib *obj)
 {
-  GuiStuff::setActiveGui(&GuiStuff::guiMenu);
-  ToyManager::Instance->setIntensity(0);
+  if (obj == encoderLeft){
+    GuiStuff::setActiveGui(&GuiStuff::guiMenu);
+    ToyManager::Instance->setIntensityInt(0);
+  }
 }
 
-void Vibtest::handleEncoderChange(int32_t position)
+void Vibtest::handleEncoderChange(i2cEncoderMiniLib *obj, int32_t position)
 {
-  setIntensity(position);
+  if (obj == encoderLeft){
+    setIntensity(position);
+  }
 }
 
 void Vibtest::setIntensity(uint8_t intensity)
 {
   this->intensity = intensity;
-  ToyManager::Instance->setIntensity(intensity);
+  ToyManager::Instance->setIntensityInt(intensity);
   draw();
 }

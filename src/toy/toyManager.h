@@ -10,7 +10,7 @@ public:
 
   void init(); // call this once to create the objects
   void checkConnections(); // call this regularly to reconnect to lost devices
-  void setIntensity(int16_t intensity);
+  void setIntensityInt(int16_t intensity);
   void setIntensity(Intensity intensity);
   static ToyManager* Instance;
 private:

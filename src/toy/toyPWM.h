@@ -7,9 +7,8 @@
 class ToyPWM : public ToyInterface {
 public:
   void init();
-  void setIntensity(int16_t intensity);
   void setIntensity(Intensity intensity) override;
-
+  void setIntensityInt(int16_t intensity);
 };
 
 #endif

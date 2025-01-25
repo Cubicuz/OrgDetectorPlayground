@@ -37,6 +37,16 @@ int16_t Detector::getBoringToFunThresh()
   return boringToFunThresh;
 }
 
+void Detector::setCooldownTimeSeconds(uint8_t value)
+{
+  cooldownTimeInMillis = ((unsigned long)value) * 1000;
+}
+
+uint8_t Detector::getCooldownTimeSeconds()
+{
+  return (uint8_t) (cooldownTimeInMillis/1000);
+}
+
 int16_t Detector::lastInserted(int16_t offset)
 {
   return values[(lastInsertedIndex + longAverageDuration + offset)%longAverageDuration];

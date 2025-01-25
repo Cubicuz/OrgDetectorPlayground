@@ -10,7 +10,7 @@ class ToyBLE : public ToyInterface {
 public:
   void init();
   void connect();
-  void setIntensity(int16_t intensity);
+  void setIntensityInt(int16_t intensity);
   void setIntensity(Intensity intensity) override;
   void end();
 

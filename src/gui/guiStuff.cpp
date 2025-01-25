@@ -6,12 +6,12 @@ Play GuiStuff::guiPlay{};
 Settings GuiStuff::guiSettings{};
 Vibtest GuiStuff::guiVibtest{};
 
-void GuiStuff::initializeGuis(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *enc)
+void GuiStuff::initializeGuis(Adafruit_SSD1306 *dp, i2cEncoderMiniLib *encLeft, i2cEncoderMiniLib *encRight)
 {
-  guiMenu.init(dp, enc);
-  guiPlay.init(dp, enc);
-  guiSettings.init(dp, enc);
-  guiVibtest.init(dp, enc);
+  guiMenu.init(dp, encLeft, encRight);
+  guiPlay.init(dp, encLeft, encRight);
+  guiSettings.init(dp, encLeft, encRight);
+  guiVibtest.init(dp, encLeft, encRight);
 
   guiMenu.addMenuEntry(" play", &guiPlay);
   guiMenu.addMenuEntry(" setting", &guiSettings);
