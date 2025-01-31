@@ -3,7 +3,7 @@
 #include "guiStuff.h"
 #include "toy/toyBle.h"
 
-enum SETTINGS_INDEX : uint8_t {
+enum SettingsIndex : uint8_t {
   IndexReturn,
   IndexBtEnable,
   IndexBtDeviceSelect,

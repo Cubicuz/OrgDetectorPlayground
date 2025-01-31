@@ -21,6 +21,9 @@ public:
   int16_t getBoringToFunThresh();
   void setCooldownTimeSeconds(uint8_t value);
   uint8_t getCooldownTimeSeconds();
+  void setIntegrationLimit(uint32_t value);
+  uint32_t getIntegrationLimit();
+
 
   static Detector instance;
 private:
@@ -30,6 +33,7 @@ private:
   int32_t sumOfCurrentValues{};
   int16_t lowestValue{};
   int16_t noiseIntensity{};
+  const int16_t OneBarReference = 1822;
   int16_t boringToFunThresh = 1850;
   int16_t funToBoringThresh = 1830;
 
@@ -44,7 +48,7 @@ private:
   int16_t lastInserted(int16_t offset = 0);
 
   uint32_t integrationCounter;
-  const uint32_t integrationMax = 100000;
+  uint32_t integrationMax = 100000;
 
   unsigned long cooldownBeginTimestamp;
   unsigned long cooldownTimeInMillis = 5000;

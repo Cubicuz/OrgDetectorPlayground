@@ -21,6 +21,12 @@ public:
 private:
   int8_t maxIntensity = 0;
   int16_t adcValue = 0;
+  enum RightEncoderState{
+    Cooldown,
+    Integral
+  };
+  RightEncoderState rightEncoderState = Cooldown;
+  void setupRightEncoder();
 };
 
 #endif

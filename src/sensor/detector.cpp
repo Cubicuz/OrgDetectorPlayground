@@ -28,7 +28,10 @@ void Detector::setBoringToFunThresh(int16_t value)
   value = constrain(value, 21, 0xFFF);
   if (value != boringToFunThresh){
     boringToFunThresh = value;
-    funToBoringThresh = value - 40;
+    funToBoringThresh = value - 20;
+    if (funToBoringThresh <= OneBarReference){
+      funToBoringThresh = OneBarReference+1;
+    }
   }
 }
 
@@ -47,6 +50,16 @@ uint8_t Detector::getCooldownTimeSeconds()
   return (uint8_t) (cooldownTimeInMillis/1000);
 }
 
+void Detector::setIntegrationLimit(uint32_t value)
+{
+  integrationMax = value * 1000;
+}
+
+uint32_t Detector::getIntegrationLimit()
+{
+  return (uint32_t) (integrationMax/1000);
+}
+
 int16_t Detector::lastInserted(int16_t offset)
 {
   return values[(lastInsertedIndex + longAverageDuration + offset)%longAverageDuration];
@@ -61,9 +74,18 @@ void Detector::updateState()
       state = FUN;
       integrationCounter = 0;
     }
+    if (shortAverage < OneBarReference){
+      // vacuum problem
+      state = COOLDOWN;
+      cooldownBeginTimestamp = millis();
+    }
     break;
   case FUN:
-    if (shortAverage < funToBoringThresh){
+    if (shortAverage < OneBarReference){
+      // vacuum problem
+      state = COOLDOWN;
+      cooldownBeginTimestamp = millis();
+    } else if (shortAverage < funToBoringThresh){
       state = BORING;
     } else {
       integrationCounter += lastInserted();
