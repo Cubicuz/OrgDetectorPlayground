@@ -14,6 +14,8 @@ void PreferencesManager::begin()
   pwmToyEnabledValue = preferences.getBool(pwmToyEnabledKey.c_str(), true);
   pwmToyLowIntensityValue = preferences.getUShort(pwmToyLowIntensityKey.c_str(), 16);
   pwmToyHighIntensityValue = preferences.getUShort(pwmToyHighIntensityKey.c_str(), 255);
+
+  adcReference1BarValue = preferences.getShort(adcReference1BarKey.c_str(), 1821);
 }
 
 bool PreferencesManager::bluetoothEnabled()
@@ -105,4 +107,16 @@ void PreferencesManager::setSelectedBluetoothDeviceIndex(uint16_t value)
     preferences.putUShort(selectedBluetoothDeviceIndexKey.c_str(), value);
     selectedBluetoothDeviceIndexValue = value;
   }
+}
+
+int16_t PreferencesManager::adcReference1Bar()
+{
+    return adcReference1BarValue;
+}
+
+void PreferencesManager::setAdcReference1Bar(int16_t value) {
+    if (value != adcReference1BarValue){
+        preferences.putShort(adcReference1BarKey.c_str(), value);
+        adcReference1BarValue = value;
+    }
 }

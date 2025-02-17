@@ -1,4 +1,5 @@
 #include "detector.h"
+#include "../preferencesManager.h"
 
 Detector Detector::instance{};
 
@@ -29,8 +30,8 @@ void Detector::setBoringToFunThresh(int16_t value)
   if (value != boringToFunThresh){
     boringToFunThresh = value;
     funToBoringThresh = value - 20;
-    if (funToBoringThresh <= OneBarReference){
-      funToBoringThresh = OneBarReference+1;
+    if (funToBoringThresh <= PreferencesManager::instance.adcReference1Bar()){
+      funToBoringThresh = PreferencesManager::instance.adcReference1Bar()+1;
     }
   }
 }
@@ -74,14 +75,14 @@ void Detector::updateState()
       state = FUN;
       integrationCounter = 0;
     }
-    if (shortAverage < OneBarReference){
+    if (shortAverage < PreferencesManager::instance.adcReference1Bar()){
       // vacuum problem
       state = COOLDOWN;
       cooldownBeginTimestamp = millis();
     }
     break;
   case FUN:
-    if (shortAverage < OneBarReference){
+    if (shortAverage < PreferencesManager::instance.adcReference1Bar()){
       // vacuum problem
       state = COOLDOWN;
       cooldownBeginTimestamp = millis();

@@ -31,6 +31,9 @@ public:
 
   uint16_t selectedBluetoothDeviceIndex();
   void setSelectedBluetoothDeviceIndex(uint16_t value);
+
+  int16_t adcReference1Bar();
+  void setAdcReference1Bar(int16_t value);
 private:
   Preferences preferences;
 
@@ -54,6 +57,9 @@ private:
 
   uint16_t selectedBluetoothDeviceIndexValue = 0;
   const String selectedBluetoothDeviceIndexKey = "btSelDevID";
+
+  int16_t adcReference1BarValue = 0;
+  const String adcReference1BarKey = "adcRef1Bar";
 };
 
 #endif

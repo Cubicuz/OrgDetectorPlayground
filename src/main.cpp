@@ -28,9 +28,6 @@ Adafruit_SSD1306 display(128, 64, &Wire); // width, height
 i2cEncoderMiniLib rotEncoder(0x20);
 i2cEncoderMiniLib rotEncoder2(0x21);
 
-ToyManager toyManager;
-ADCManager adcManager;
-
 void draw();
 void PrintHEX(uint8_t i);
 
@@ -52,8 +49,6 @@ int32_t encoderPosition = 0;
 void setup()
 {
   // put your setup code here, to run once:
-  ToyManager::Instance = &toyManager;
-
 
   Serial.begin(115200);
   pinMode(IntPin, INPUT);
@@ -82,8 +77,8 @@ void setup()
       setupRotEncoder();
       GuiStuff::initializeGuis(&display, &rotEncoder, &rotEncoder2);
 
-      adcManager.init();
-      toyManager.init();
+      ADCManager::instance.init();
+      ToyManager::instance.init();
       PreferencesManager::instance.begin();
     }
   }
@@ -98,29 +93,29 @@ void loop()
   rotEncoder2.updateStatus();
   
   if ((GuiStuff::activeGui == &GuiStuff::guiPlay)){
-    adcManager.updateValues();
-    Detector::instance.putValue(adcManager.getAdcValue());
+    ADCManager::instance.updateValues();
+    Detector::instance.putValue(ADCManager::instance.getAdcValue());
     switch (Detector::instance.getState())
     {
     case Detector::State::BORING:
-      toyManager.setIntensity(High);
+      ToyManager::instance.setIntensity(High);
       break;
     case Detector::State::FUN:
-      toyManager.setIntensity(Low);
+      ToyManager::instance.setIntensity(Low);
       break;
     case Detector::State::COOLDOWN:
-      toyManager.setIntensity(Off);
+      ToyManager::instance.setIntensity(Off);
       break;
     default:
       break;
     }
-    GuiStuff::guiPlay.setAdcValue(adcManager.getAdcValue());
+    GuiStuff::guiPlay.setAdcValue(ADCManager::instance.getAdcValue());
   } else if (GuiStuff::activeGui == &GuiStuff::guiVibtest){
-    adcManager.updateValues();
-    GuiStuff::guiVibtest.setAdcValue(adcManager.getAdcValue());
+    ADCManager::instance.updateValues();
+    GuiStuff::guiVibtest.setAdcValue(ADCManager::instance.getAdcValue());
   }
   if (currentTimeStamp > nextBluetoothRefreshTimestamp) { // check bluetooth once per 5 seconds
-    toyManager.checkConnections();
+    ToyManager::instance.checkConnections();
     nextBluetoothRefreshTimestamp = currentTimeStamp + 5000; // bluetooth every 5 ms
   }
   

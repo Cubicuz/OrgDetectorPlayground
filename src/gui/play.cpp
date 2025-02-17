@@ -102,7 +102,7 @@ void Play::handleButtonLongPush(i2cEncoderMiniLib *obj)
 {
   if (obj == encoderLeft){
     GuiStuff::setActiveGui(&GuiStuff::guiMenu);
-    ToyManager::Instance->setIntensity(Off);
+    ToyManager::instance.setIntensity(Off);
   }
 }
 

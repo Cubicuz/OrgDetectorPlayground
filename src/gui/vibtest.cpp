@@ -56,7 +56,7 @@ void Vibtest::handleButtonLongPush(i2cEncoderMiniLib *obj)
 {
   if (obj == encoderLeft){
     GuiStuff::setActiveGui(&GuiStuff::guiMenu);
-    ToyManager::Instance->setIntensityInt(0);
+    ToyManager::instance.setIntensityInt(0);
   }
 }
 
@@ -70,6 +70,6 @@ void Vibtest::handleEncoderChange(i2cEncoderMiniLib *obj, int32_t position)
 void Vibtest::setIntensity(uint8_t intensity)
 {
   this->intensity = intensity;
-  ToyManager::Instance->setIntensityInt(intensity);
+  ToyManager::instance.setIntensityInt(intensity);
   draw();
 }

@@ -1,5 +1,7 @@
 #include "adcManager.h"
 
+ADCManager ADCManager::instance{};
+
 void ADCManager::init()
 {
   adsSuccessfullStarted = ads.begin();

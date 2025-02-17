@@ -2,6 +2,7 @@
 #include "../preferencesManager.h"
 #include "guiStuff.h"
 #include "toy/toyBle.h"
+#include "../sensor/adcManager.h"
 
 enum SettingsIndex : uint8_t {
   IndexReturn,
@@ -9,6 +10,7 @@ enum SettingsIndex : uint8_t {
   IndexBtDeviceSelect,
   IndexBtMaxIntensity,
   IndexPwmEnable,
+  IndexAdcRef,
   INDEXSIZE // this is always the last index
 };
 
@@ -116,6 +118,12 @@ void Settings::handleButtonPush(i2cEncoderMiniLib *obj)
           setEncoderPurpose(menu);
         }
         draw();
+        break;
+      case IndexAdcRef:
+        ADCManager::instance.updateValues();
+        PreferencesManager::instance.setAdcReference1Bar(ADCManager::instance.getAdcValue());
+        draw();
+        break;
       default:
         break;
     }
@@ -185,10 +193,10 @@ void Settings::drawIndex(uint8_t index)
       break;
     case IndexBtDeviceSelect:
       if (encoderMode == BtDeviceSelect){
-        display->printf("* %.10s", ToyBLE::selectableDevices[tempEncoderVal].displayName);
+        display->printf("* %.10s", ToyBLE::selectableDevices[tempEncoderVal].displayName.c_str());
         display->println();
       } else {
-        display->printf("BtDev: %.10s", ToyBLE::selectableDevices[PreferencesManager::instance.selectedBluetoothDeviceIndex()].displayName);
+        display->printf("BtDev: %.10s", ToyBLE::selectableDevices[PreferencesManager::instance.selectedBluetoothDeviceIndex()].displayName.c_str());
         display->println();
       }
       break;
@@ -207,6 +215,10 @@ void Settings::drawIndex(uint8_t index)
         display->print("*vib ");
         display->println(tempEncoderVal);
       }
+      break;
+    case IndexAdcRef: // set the adc reference to detect negative pressures
+      display->printf("AdcRef: %" PRIu16 "\r\n", PreferencesManager::instance.adcReference1Bar());
+      break;
     default:
       break;
   }

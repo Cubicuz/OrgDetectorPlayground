@@ -33,7 +33,6 @@ private:
   int32_t sumOfCurrentValues{};
   int16_t lowestValue{};
   int16_t noiseIntensity{};
-  const int16_t OneBarReference = 1822;
   int16_t boringToFunThresh = 1850;
   int16_t funToBoringThresh = 1830;
 

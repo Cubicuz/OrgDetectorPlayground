@@ -2,7 +2,7 @@
 #include "toyBle.h"
 #include "preferencesManager.h"
 
-ToyManager* ToyManager::Instance;
+ToyManager ToyManager::instance{};
 
 void ToyManager::init()
 {

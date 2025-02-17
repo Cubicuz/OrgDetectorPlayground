@@ -6,6 +6,7 @@
 
 class ADCManager {
 public:
+  static ADCManager instance;
   void init();
   bool updateValues();
   int16_t getAdcValue();
@@ -15,6 +16,7 @@ private:
   bool adsSuccessfullStarted = false;
   int16_t adcValue;
   uint32_t millisTimestamp;
+  ADCManager() = default;
 };
 
 
