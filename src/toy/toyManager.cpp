@@ -12,7 +12,7 @@ void ToyManager::init()
 
 void ToyManager::checkConnections()
 {
-  if (PreferencesManager::instance.bluetoothEnabled()){
+  if (PreferencesManager::instance.bluetoothToyEnabled()){
     toyBLE.connect();
   } else {
     toyBLE.end();

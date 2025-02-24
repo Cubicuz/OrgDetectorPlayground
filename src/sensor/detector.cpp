@@ -1,5 +1,6 @@
 #include "detector.h"
 #include "../preferencesManager.h"
+#include "BleManager.h"
 
 Detector Detector::instance{};
 
@@ -68,30 +69,31 @@ int16_t Detector::lastInserted(int16_t offset)
 
 void Detector::updateState()
 {
+  State nextState = state;
   switch (state)
   {
   case BORING:
     if (shortAverage > boringToFunThresh){
-      state = FUN;
+      nextState = FUN;
       integrationCounter = 0;
     }
-    if (shortAverage < PreferencesManager::instance.adcReference1Bar()){
+    if (shortAverage < (PreferencesManager::instance.adcReference1Bar()-5)){
       // vacuum problem
-      state = COOLDOWN;
+      nextState = COOLDOWN;
       cooldownBeginTimestamp = millis();
     }
     break;
   case FUN:
-    if (shortAverage < PreferencesManager::instance.adcReference1Bar()){
+    if (shortAverage < (PreferencesManager::instance.adcReference1Bar()-5)){
       // vacuum problem
-      state = COOLDOWN;
+      nextState = COOLDOWN;
       cooldownBeginTimestamp = millis();
     } else if (shortAverage < funToBoringThresh){
-      state = BORING;
+      nextState = BORING;
     } else {
       integrationCounter += lastInserted();
       if (integrationCounter > integrationMax){
-        state = COOLDOWN;
+        nextState = COOLDOWN;
         cooldownBeginTimestamp = millis();
       }
     }
@@ -100,10 +102,15 @@ void Detector::updateState()
     if ( (shortAverage < funToBoringThresh) 
       && (cooldownBeginTimestamp + cooldownTimeInMillis < millis()))
     {
-      state = BORING;
+      nextState = BORING;
     }
     break;
   default:
     break;
+  }
+
+  if (nextState != state){
+    state = nextState;
+    //BleManager::instance.updateDetectorState((uint16_t)state);
   }
 }

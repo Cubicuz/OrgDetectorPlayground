@@ -7,6 +7,7 @@
 
 #include "toyBle.h"
 #include "preferencesManager.h"
+#include "../sensor/BleManager.h"
 
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
   void onResult(BLEAdvertisedDevice advertisedDevice) {
@@ -40,8 +41,6 @@ static void notifyCallback(
   size_t length,
   bool isNotify) {
     
-    // al this is useless for me if I cannot broadcast it using my utils.
-    // can I make notifyCallback part of an object?
     Serial.print("Notify callback for characteristic ");
     Serial.print(pBLERemoteCharacteristic->getUUID().toString().c_str());
     Serial.print(" of data length ");
@@ -58,7 +57,7 @@ void ToyBLE::connect()
   if (!BLEDevice::getInitialized()){
     BLEDevice::init("");
   }
-
+  //BleManager::instance.stopAdvertising();
   BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
 
   Serial.print("Devices found: ");
@@ -70,6 +69,9 @@ void ToyBLE::connect()
     auto device = foundDevices.getDevice(i);
     Serial.println(device.toString().c_str());
     auto selectedIndex = PreferencesManager::instance.selectedBluetoothDeviceIndex();
+    if (fixedIndex != UINT16_MAX){
+      selectedIndex = fixedIndex;
+    }
     if (device.getAddress().equals(selectableDevices[selectedIndex].address)){
       if (bleclient.connect(&device)){
         Serial.println("connected");
@@ -78,11 +80,7 @@ void ToyBLE::connect()
         for (const auto& kv : serviceMap){
           kv.second->getCharacteristics();
           Serial.println(kv.second->toString().c_str());
-
         }
-        auto tests5 = BLEUUID("57300001-0023-4bd4-bbd5-a6920e4c5653");
-        auto tests5c1 = BLEUUID("57300002-0023-4bd4-bbd5-a6920e4c5653"); // w
-        auto tests5c2 = BLEUUID("57300003-0023-4bd4-bbd5-a6920e4c5653"); // n
 
         auto caracteristicsMap = *(bleclient.getService(selectableDevices[selectedIndex].serviceUUID)->getCharacteristics());
         for (const auto& kv : caracteristicsMap){
@@ -99,8 +97,8 @@ void ToyBLE::connect()
       break;
     }
   }
-  pBLEScan->clearResults();
-
+  //pBLEScan->clearResults();
+  //BleManager::instance.startAdvertising();
 }
 
 void ToyBLE::setIntensityInt(int16_t intensity)
@@ -111,6 +109,9 @@ void ToyBLE::setIntensityInt(int16_t intensity)
       this->intensity = newIntensity;
       String value = String("Vibrate:") + String(this->intensity);
       uint16_t selectedIndex = PreferencesManager::instance.selectedBluetoothDeviceIndex();
+      if (fixedIndex != UINT16_MAX){
+        selectedIndex = fixedIndex;
+      }
       bleclient.getService(selectableDevices[selectedIndex].serviceUUID)->setValue(selectableDevices[selectedIndex].characteristic, value.c_str());
     }
   }
@@ -134,8 +135,5 @@ void ToyBLE::end()
 {
   if (bleclient.isConnected()){
     bleclient.disconnect();
-  }
-  if (BLEDevice::getInitialized()){
-    BLEDevice::deinit();
   }
 }

@@ -6,7 +6,8 @@
 
 enum SettingsIndex : uint8_t {
   IndexReturn,
-  IndexBtEnable,
+  IndexBtToyEnable,
+  IndexBtServiceEnable,
   IndexBtDeviceSelect,
   IndexBtMaxIntensity,
   IndexPwmEnable,
@@ -93,8 +94,12 @@ void Settings::handleButtonPush(i2cEncoderMiniLib *obj)
       case IndexReturn: 
         GuiStuff::setActiveGui(&GuiStuff::guiMenu);
         break;
-      case IndexBtEnable: // toggle bluetooth enabled
-        PreferencesManager::instance.setBluetoothEnabled(!PreferencesManager::instance.bluetoothEnabled());
+      case IndexBtToyEnable: // toggle bluetooth enabled
+        PreferencesManager::instance.setBluetoothToyEnabled(!PreferencesManager::instance.bluetoothToyEnabled());
+        draw();
+        break;
+      case IndexBtServiceEnable: // toggle bluetooth enabled
+        PreferencesManager::instance.setBluetoothServiceEnabled(!PreferencesManager::instance.bluetoothServiceEnabled());
         draw();
         break;
       case IndexBtDeviceSelect:
@@ -184,11 +189,18 @@ void Settings::drawIndex(uint8_t index)
     case IndexReturn: 
       display->println("return");
       break;
-    case IndexBtEnable: // enable/disable bluetooth
-      if (PreferencesManager::instance.bluetoothEnabled()){
-        display->println("BT on");
+    case IndexBtToyEnable: // enable/disable bluetooth toy
+      if (PreferencesManager::instance.bluetoothToyEnabled()){
+        display->println("BT Toy on");
       } else {
-        display->println("BT off");
+        display->println("BT Toy off");
+      }
+      break;
+    case IndexBtServiceEnable: // enable/disable bluetooth state advertising
+      if (PreferencesManager::instance.bluetoothServiceEnabled()){
+        display->println("BT Service on");
+      } else {
+        display->println("BT Service off");
       }
       break;
     case IndexBtDeviceSelect:

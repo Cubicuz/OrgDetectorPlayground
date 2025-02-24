@@ -9,7 +9,7 @@ const int PWM_RESOLUTION = 8; // We'll use same resolution as Uno (8 bits, 0-255
 const int MAX_DUTY_CYCLE = 200;
 const int LOW_DUTY_CYCLE = 50;
 
-const int LED_OUTPUT_PIN = 33;
+const int LED_OUTPUT_PIN = 23;
 
 void ToyPWM::init()
 {

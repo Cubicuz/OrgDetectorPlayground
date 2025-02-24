@@ -11,6 +11,7 @@
 #include "sensor/adcManager.h"
 #include "preferencesManager.h"
 #include "sensor/detector.h"
+#include "sensor/BleManager.h"
 
 #define I2C_0_SDA 16
 #define I2C_0_SCL 17
@@ -78,8 +79,10 @@ void setup()
       GuiStuff::initializeGuis(&display, &rotEncoder, &rotEncoder2);
 
       ADCManager::instance.init();
+      //BleManager::instance.init();
       ToyManager::instance.init();
       PreferencesManager::instance.begin();
+      //BleManager::instance.startAdvertising();
     }
   }
 }
