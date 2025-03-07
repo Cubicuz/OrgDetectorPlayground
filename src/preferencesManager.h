@@ -14,9 +14,6 @@ public:
   bool bluetoothToyEnabled();
   void setBluetoothToyEnabled(bool value);
 
-  bool bluetoothServiceEnabled();
-  void setBluetoothServiceEnabled(bool value);
-
   int16_t boringToFunThreshold();
   void setBoringToFunThreshold(int16_t value);
 
@@ -42,9 +39,6 @@ private:
 
   bool bluetoothToyEnabledValue = false;
   const String bluetoothToyEnabledKey = "btEnabled";
-
-  bool bluetoothServiceEnabledValue = false;
-  const String bluetoothServiceEnabledKey = "btServEn";
 
   int16_t boringToFunThresholdValue = 0;
   const String boringToFunThresholdKey = "btfthrsh";

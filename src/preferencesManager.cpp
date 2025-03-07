@@ -7,14 +7,13 @@ void PreferencesManager::begin()
   preferences.begin("my-app", false);
 
   bluetoothToyEnabledValue = preferences.getBool(bluetoothToyEnabledKey.c_str(), false);
-  bluetoothServiceEnabledValue = preferences.getBool(bluetoothServiceEnabledKey.c_str(), false);
   boringToFunThresholdValue = preferences.getShort(boringToFunThresholdKey.c_str(), 700);
   bluetoothIntensityValue = preferences.getShort(bluetoothIntensityKey.c_str(), 15);
   selectedBluetoothDeviceIndexValue = preferences.getUShort(selectedBluetoothDeviceIndexKey.c_str(), 0);
 
   pwmToyEnabledValue = preferences.getBool(pwmToyEnabledKey.c_str(), true);
-  pwmToyLowIntensityValue = preferences.getUShort(pwmToyLowIntensityKey.c_str(), 16);
-  pwmToyHighIntensityValue = preferences.getUShort(pwmToyHighIntensityKey.c_str(), 255);
+  pwmToyLowIntensityValue = preferences.getUShort(pwmToyLowIntensityKey.c_str(), 50);
+  pwmToyHighIntensityValue = preferences.getUShort(pwmToyHighIntensityKey.c_str(), 150);
 
   adcReference1BarValue = preferences.getShort(adcReference1BarKey.c_str(), 1821);
 }
@@ -29,19 +28,6 @@ void PreferencesManager::setBluetoothToyEnabled(bool value)
   if (value != bluetoothToyEnabledValue){
     bluetoothToyEnabledValue = value;
     preferences.putBool(bluetoothToyEnabledKey.c_str(), value);
-  }
-}
-
-bool PreferencesManager::bluetoothServiceEnabled()
-{
-  return bluetoothServiceEnabledValue;
-}
-
-void PreferencesManager::setBluetoothServiceEnabled(bool value)
-{
-  if (value != bluetoothServiceEnabledValue){
-    bluetoothServiceEnabledValue = value;
-    preferences.putBool(bluetoothServiceEnabledKey.c_str(), value);
   }
 }
 

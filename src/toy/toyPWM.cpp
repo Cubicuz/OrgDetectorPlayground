@@ -7,7 +7,7 @@ const int PWM_RESOLUTION = 8; // We'll use same resolution as Uno (8 bits, 0-255
 
 // The max duty cycle value based on PWM resolution (will be 255 if resolution is 8 bits)
 const int MAX_DUTY_CYCLE = 200;
-const int LOW_DUTY_CYCLE = 50;
+const int LOW_DUTY_CYCLE = 30;
 
 const int LED_OUTPUT_PIN = 23;
 
@@ -29,7 +29,8 @@ void ToyPWM::setIntensityInt(int16_t intensity)
   }
   if (intensity > MAX_DUTY_CYCLE){
     intensity = MAX_DUTY_CYCLE;
-  } else if (intensity < 0){
+  } else if (intensity < LOW_DUTY_CYCLE){
+    // avoid standstill current consumption
     intensity = 0;
   }
   ledcWrite(PWM_CHANNEL, intensity);
@@ -43,10 +44,10 @@ void ToyPWM::setIntensity(Intensity intensity)
     setIntensityInt(0);
     break;
   case Low:
-    setIntensityInt(LOW_DUTY_CYCLE);
+    setIntensityInt(PreferencesManager::instance.pwmToyLowIntensity());
     break;
   case High:
-    setIntensityInt(MAX_DUTY_CYCLE);
+    setIntensityInt(PreferencesManager::instance.pwmToyHighIntensity());
     break;
   default:
     break;

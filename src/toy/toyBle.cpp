@@ -124,9 +124,9 @@ void ToyBLE::setIntensity(Intensity intensity)
     setIntensityInt(0);
     break;
   case Low:
-    setIntensityInt(5);
+    setIntensityInt(PreferencesManager::instance.bluetoothIntensity()/2);
   case High:
-    setIntensityInt(25);
+    setIntensityInt(PreferencesManager::instance.bluetoothIntensity());
   default:
     break;
   }

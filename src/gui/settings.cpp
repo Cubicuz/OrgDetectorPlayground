@@ -7,7 +7,6 @@
 enum SettingsIndex : uint8_t {
   IndexReturn,
   IndexBtToyEnable,
-  IndexBtServiceEnable,
   IndexBtDeviceSelect,
   IndexBtMaxIntensity,
   IndexPwmEnable,
@@ -98,10 +97,6 @@ void Settings::handleButtonPush(i2cEncoderMiniLib *obj)
         PreferencesManager::instance.setBluetoothToyEnabled(!PreferencesManager::instance.bluetoothToyEnabled());
         draw();
         break;
-      case IndexBtServiceEnable: // toggle bluetooth enabled
-        PreferencesManager::instance.setBluetoothServiceEnabled(!PreferencesManager::instance.bluetoothServiceEnabled());
-        draw();
-        break;
       case IndexBtDeviceSelect:
         if (encoderMode == menu) {
           setEncoderPurpose(BtDeviceSelect);
@@ -165,7 +160,7 @@ void Settings::setEncoderPurpose(EncoderPurpose e)
     break;  
   case PwmLowIntensity:
     encoderLeft->begin(i2cEncoderMiniLib::WRAP_ENABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
-    encoderLeft->writeMin((int32_t)0);                      /* Set the minimum threshold */
+    encoderLeft->writeMin((int32_t)30);                      /* Set the minimum threshold */
     encoderLeft->writeMax((int32_t)PreferencesManager::instance.pwmToyHighIntensity()); /* Set the maximum threshold*/
     encoderLeft->writeStep((int32_t)1);                     /* Set the step to 1*/
     encoderLeft->writeCounter(PreferencesManager::instance.pwmToyLowIntensity());
@@ -174,7 +169,7 @@ void Settings::setEncoderPurpose(EncoderPurpose e)
   case PwmHighIntensity:
     encoderLeft->begin(i2cEncoderMiniLib::WRAP_ENABLE | i2cEncoderMiniLib::DIRE_LEFT | i2cEncoderMiniLib::IPUP_ENABLE | i2cEncoderMiniLib::RMOD_X1);
     encoderLeft->writeMin((int32_t)PreferencesManager::instance.pwmToyLowIntensity());                      /* Set the minimum threshold */
-    encoderLeft->writeMax((int32_t)255); /* Set the maximum threshold*/
+    encoderLeft->writeMax((int32_t)200); /* Set the maximum threshold*/
     encoderLeft->writeStep((int32_t)1);                     /* Set the step to 1*/
     encoderLeft->writeCounter(PreferencesManager::instance.pwmToyHighIntensity());
     tempEncoderVal = PreferencesManager::instance.pwmToyHighIntensity();
@@ -194,13 +189,6 @@ void Settings::drawIndex(uint8_t index)
         display->println("BT Toy on");
       } else {
         display->println("BT Toy off");
-      }
-      break;
-    case IndexBtServiceEnable: // enable/disable bluetooth state advertising
-      if (PreferencesManager::instance.bluetoothServiceEnabled()){
-        display->println("BT Service on");
-      } else {
-        display->println("BT Service off");
       }
       break;
     case IndexBtDeviceSelect:
