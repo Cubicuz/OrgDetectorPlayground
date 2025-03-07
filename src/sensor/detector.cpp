@@ -1,6 +1,5 @@
 #include "detector.h"
 #include "../preferencesManager.h"
-#include "BleManager.h"
 
 Detector Detector::instance{};
 

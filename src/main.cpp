@@ -11,7 +11,6 @@
 #include "sensor/adcManager.h"
 #include "preferencesManager.h"
 #include "sensor/detector.h"
-#include "sensor/BleManager.h"
 
 #define I2C_0_SDA 16
 #define I2C_0_SCL 17
@@ -57,18 +56,18 @@ void setup()
   if (!Wire.begin(I2C_0_SDA, I2C_0_SCL, I2C_0_CLOCK))
   {
     // error
-    Serial.write("error at Wire begin");
+    Serial.println("error at Wire begin");
   }
   else
   {
     if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3c))
     {
       // error
-      Serial.write("error at display begin");
+      Serial.println("error at display begin");
     }
     else
     {
-      Serial.write("Serial okay");
+      Serial.println("Serial okay");
       display.clearDisplay();
       display.setTextSize(2);
       display.setTextColor(SSD1306_WHITE);

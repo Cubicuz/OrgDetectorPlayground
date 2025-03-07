@@ -29,7 +29,7 @@ private:
   BLEClient bleclient{};
   
 
-  int scanTime = 5; // seconds
+  int scanTime = 1; // seconds
   int16_t intensity = 0;
 };
 

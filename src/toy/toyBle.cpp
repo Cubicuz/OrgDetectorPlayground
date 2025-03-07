@@ -7,34 +7,35 @@
 
 #include "toyBle.h"
 #include "preferencesManager.h"
-#include "../sensor/BleManager.h"
+
+const std::vector<ToyBLE::SelectableDevice> ToyBLE::selectableDevices{
+  {"Hush Michael", BLEAddress("c4:4f:50:91:71:7e"), BLEUUID("5a300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("5a300002-0023-4bd4-bbd5-a6920e4c5653")},
+  {"Max nd", BLEAddress("dc:98:65:69:16:c4"), BLEUUID("42300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("42300002-0023-4bd4-bbd5-a6920e4c5653")},
+  {"Domi2 nd", BLEAddress("f8:44:77:1d:27:e3"), BLEUUID("57300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("57300002-0023-4bd4-bbd5-a6920e4c5653")},
+  {"Domi michi", BLEAddress("6c:5c:b1:46:60:ab"), BLEUUID("57300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("57300002-0023-4bd4-bbd5-a6920e4c5653")},
+};
+
 
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
   void onResult(BLEAdvertisedDevice advertisedDevice) {
-    if (advertisedDevice.getAddress().equals(BLEAddress("c4:4f:50:91:71:7e"))){
+    auto selectedIndex = PreferencesManager::instance.selectedBluetoothDeviceIndex();
+    if (advertisedDevice.getAddress().equals(ToyBLE::selectableDevices[selectedIndex].address)){
       Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
-
     }
   }
 };
 
-const std::vector<ToyBLE::SelectableDevice> ToyBLE::selectableDevices{
-    {"Hush Michael", BLEAddress("c4:4f:50:91:71:7e"), BLEUUID("5a300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("5a300002-0023-4bd4-bbd5-a6920e4c5653")},
-    {"Max nd", BLEAddress("dc:98:65:69:16:c4"), BLEUUID("42300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("42300002-0023-4bd4-bbd5-a6920e4c5653")},
-    {"Domi2 nd", BLEAddress("f8:44:77:1d:27:e3"), BLEUUID("57300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("57300002-0023-4bd4-bbd5-a6920e4c5653")},
-    {"Domi michi", BLEAddress("6c:5c:b1:46:60:ab"), BLEUUID("57300001-0023-4bd4-bbd5-a6920e4c5653"), BLEUUID("57300002-0023-4bd4-bbd5-a6920e4c5653")},
-
-  };
 
 void ToyBLE::init()
 {
   pBLEScan = BLEDevice::getScan(); // create new scan
-  pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+  //pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks(this));
   pBLEScan->setActiveScan(true); //active scan uses more power, but get results faster
   pBLEScan->setInterval(100);
   pBLEScan->setWindow(99); // less or equal setInterval value
-
+  pBLEScan->clearResults();
 }
+
 static void notifyCallback(
   BLERemoteCharacteristic* pBLERemoteCharacteristic,
   uint8_t* pData,
@@ -55,10 +56,10 @@ void ToyBLE::connect()
     return;
   }
   if (!BLEDevice::getInitialized()){
+    Serial.println("BLEDevice::init");
     BLEDevice::init("");
   }
-  //BleManager::instance.stopAdvertising();
-  BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
+  BLEScanResults foundDevices = pBLEScan->start(scanTime, true);
 
   Serial.print("Devices found: ");
   Serial.println(foundDevices.getCount());
@@ -90,15 +91,14 @@ void ToyBLE::connect()
           }          
         }
         bleclient.getService(selectableDevices[selectedIndex].serviceUUID)->setValue(selectableDevices[selectedIndex].characteristic, "Battery;");
-
-      } else {
-        //Serial.println("could not connect to hush");
       }
       break;
     }
   }
-  //pBLEScan->clearResults();
-  //BleManager::instance.startAdvertising();
+  if (bleclient.isConnected()){
+    pBLEScan->clearResults();
+    setIntensityInt(intensity);
+  }
 }
 
 void ToyBLE::setIntensityInt(int16_t intensity)
@@ -136,4 +136,9 @@ void ToyBLE::end()
   if (bleclient.isConnected()){
     bleclient.disconnect();
   }
+  if (BLEDevice::getInitialized()){
+    Serial.println("BLEDevice::deinit");
+    BLEDevice::deinit();
+  }
+
 }
